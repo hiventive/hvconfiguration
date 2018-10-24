@@ -39,7 +39,10 @@ write_basic_package_version_file(${${PROJECT_NAME}ConfigVersionFile}
 export(EXPORT ${PROJECT_NAME}Targets
 		FILE ${${PROJECT_NAME}TargetsFile}
 		NAMESPACE ${HV_NAMESPACE})
-configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in ${${PROJECT_NAME}ConfigFile}
+file(READ ${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in ${PROJECT_NAME}_CONFIG_IN)
+string(REPLACE "#PROJECT_NAME#" ${PROJECT_NAME} ${PROJECT_NAME}_CONFIG_IN "${${PROJECT_NAME}_CONFIG_IN}")
+file(WRITE ${PROJECT_BINARY_DIR}/cmake/Config.cmake.in "${${PROJECT_NAME}_CONFIG_IN}")
+configure_package_config_file(${PROJECT_BINARY_DIR}/cmake/Config.cmake.in ${${PROJECT_NAME}ConfigFile}
 		INSTALL_DESTINATION ${${PROJECT_NAME}ConfigPackageLocation})
 install(EXPORT ${PROJECT_NAME}Targets
 		FILE ${PROJECT_NAME}Targets.cmake
