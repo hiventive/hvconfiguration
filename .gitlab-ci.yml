@@ -19,9 +19,9 @@ stages:
     -  python3 scripts/ci-before.py init
     -  python3 scripts/ci-before.py clean-conan-testing
   script:
-    - conan install . --build outdated
     - mkdir build
     - cd build
+    - conan install .. --build outdated
     - cmake -DBUILD_TESTS=ON ..
     - make
   artifacts:
@@ -43,9 +43,9 @@ stages:
     - python3 scripts/ci-before.py init
     - python3 scripts/ci-before.py clean-conan-testing
   script:
-    - conan install . --build outdated
     - mkdir build
     - cd build
+    - conan install .. --build outdated
     - cmake -DBUILD_TESTS=ON -G "$env:VISUAL_STUDIO_VERSION Win64" -D "CMAKE_GENERATOR_TOOLSET=$env:VISUAL_STUDIO_TOOLSET" ..
     - cmake --build . --config Release
   artifacts:
@@ -68,8 +68,8 @@ stages:
     - Invoke-Expression $setupEnv
     - python3 scripts/ci-before.py init
   script:
-    - conan install .
     - cd build
+    - conan install ..
     - Remove-Item "CMakeCache.txt"
     - cmake -DBUILD_TESTS=ON -G "$env:VISUAL_STUDIO_VERSION Win64" -D "CMAKE_GENERATOR_TOOLSET=$env:VISUAL_STUDIO_TOOLSET" ..
     - $env:CTEST_OUTPUT_ON_FAILURE=1
@@ -81,7 +81,6 @@ stages:
     - "`python3 scripts/ci-before.py setup-env`"
     - python3 scripts/ci-before.py init
   script:
-    - conan install . --build outdated
     - if [ -f "scripts/ci-conan-build.py" ]; then python3 scripts/ci-conan-build.py; else conan create -tf tests/conan . $CONAN_USERNAME/$CONAN_CHANNEL; fi
   artifacts:
     paths:
@@ -96,7 +95,6 @@ stages:
     - Invoke-Expression $setupEnv
     - python3 scripts/ci-before.py init
   script:
-    - conan install . --build outdated
     - If (Test-Path "scripts/ci-conan-build.py") { python3 scripts/ci-conan-build.py } Else { conan create -tf tests/conan . "$($env:CONAN_USERNAME)/$($env:CONAN_CHANNEL)" }
   artifacts:
     paths:
@@ -136,9 +134,9 @@ stages:
     -  python3 scripts/ci-before.py init
     -  python3 scripts/ci-before.py clean-conan-testing
   script:
-    - conan install . --build outdated
     - mkdir build
     - cd build
+    - conan install .. --build outdated
     - cmake -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release ..
     - make
   artifacts:
@@ -163,9 +161,9 @@ stages:
     - python3 scripts/ci-before.py init
     - python3 scripts/ci-before.py clean-conan-testing
   script:
-    - conan install . --build outdated
     - mkdir build
     - cd build
+    - conan install .. --build outdated
     - cmake -DBUILD_TESTS=ON -G "$env:VISUAL_STUDIO_VERSION Win64" -D "CMAKE_GENERATOR_TOOLSET=$env:VISUAL_STUDIO_TOOLSET" ..
     - cmake --build . --config Release
   artifacts:
@@ -194,8 +192,8 @@ stages:
     - Invoke-Expression $setupEnv
     - python3 scripts/ci-before.py init
   script:
-    - conan install .
     - cd build
+    - conan install ..
     - Remove-Item "CMakeCache.txt"
     - cmake -DBUILD_TESTS=ON -G "$env:VISUAL_STUDIO_VERSION Win64" -D "CMAKE_GENERATOR_TOOLSET=$env:VISUAL_STUDIO_TOOLSET" ..
     - $env:CTEST_OUTPUT_ON_FAILURE=1

@@ -1,10 +1,10 @@
 # Settings
 
 project:
-  name: Configuration
-  version: 0.1.0
+  name: HVConfiguration
+  version: 0.2.0
 
 conan:
-  name: configuration
+  name: hvconfiguration
   channel: testing
   username: hiventive

@@ -1,8 +1,7 @@
 from conans import ConanFile, CMake, tools
-from conans.util import files
 import yaml
 
-class ConfigurationConan(ConanFile):
+class HVConfigurationConan(ConanFile):
     name = str(yaml.load(tools.load("settings.yml"))['conan']['name'])
     version = str(yaml.load(tools.load("settings.yml"))['project']['version'])
     license = "MIT"
@@ -14,11 +13,16 @@ class ConfigurationConan(ConanFile):
     default_options = "shared=False", "fPIC=False", "fPIE=False"
     generators = "cmake"
     exports = "settings.yml"
-    exports_sources = "src/*", "CMakeLists.txt"
-    requires = "gtest/1.8.0@bincrafters/stable", \
-               "common/0.2.0@hiventive/testing", \
-               "systemc/[~2.3.2]@hiventive/stable", \
+    exports_sources = "src/*", "CMakeLists.txt", "cmake/*"
+    requires = "gtest/1.8.0@hiventive/stable", \
+               "hvcommon/0.3.0@hiventive/testing", \
                "cci/1.0.0@hiventive/stable"
+
+    def _configure_cmake(self):
+        cmake = CMake(self)
+        if self.settings.os != "Windows":
+            cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC or self.options.fPIE
+        return cmake
 
     def requirements(self):
         yamlCppNew = True
@@ -34,26 +38,14 @@ class ConfigurationConan(ConanFile):
         else:
             self.requires("yaml-cpp/0.5.3@bincrafters/stable")
 
-
     def build(self):
-        cmake = CMake(self)
-        files.mkdir("build")
-        with tools.chdir("build"):
-            if self.settings.os != "Windows":
-                cmake.definitions["CMAKE_POSITION_INDEPENDENT_CODE"] = self.options.fPIC or self.options.fPIE
-            cmake.configure(build_dir=".", source_dir="../")
-            cmake.build(build_dir=".")
-            cmake.install(build_dir=".")
+        cmake = self._configure_cmake()
+        cmake.configure()
+        cmake.build()
 
     def package(self):
-        self.copy("*.h", dst="include", src="src")
-        self.copy("*.hpp", dst="include", src="src")
-        self.copy("HVConfiguration", dst="include", src="src")
-        self.copy("*.lib", dst="lib", keep_path=False)
-        self.copy("*.dll", dst="bin", keep_path=False)
-        self.copy("*.dylib*", dst="lib", keep_path=False)
-        self.copy("*.so", dst="lib", keep_path=False)
-        self.copy("*.a", dst="lib", keep_path=False)
+        cmake = self._configure_cmake()
+        cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["configuration"]
+        self.cpp_info.libs = ["hvconfiguration"]

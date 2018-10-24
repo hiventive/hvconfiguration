@@ -1,7 +1,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 #include <systemc>
-#include <HVConfiguration>
+#include <configuration/configuration.h>
 
 class SimpleModule : public sc_core::sc_module {
 	SC_HAS_PROCESS(SimpleModule);
