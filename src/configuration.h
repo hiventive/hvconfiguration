@@ -10,6 +10,6 @@
 #ifndef HV_CONFIGURATION_H
 #define HV_CONFIGURATION_H
 
-#include "hv/configuration/configuration.h"
+#include "hv/configuration/configuration/configuration.h"
 
 #endif // HV_CONFIGURATION_H

@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "../../configuration/common.h"
-#include "storage/memory/memory.h"
+#include "../../storage/memory/memory.h"
 #include "../../storage/storage-if.h"
 #include "../../param/base/param-base.h"
 

@@ -12,6 +12,7 @@ class HVConfigurationConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False], "fPIE": [True, False]}
     default_options = "shared=False", "fPIC=False", "fPIE=False"
     generators = "cmake"
+    no_copy_source = True # TODO: remove that (GLOB_RECURSIVE issue)
     exports = "settings.yml"
     exports_sources = "src/*", "CMakeLists.txt", "cmake/*"
     requires = "gtest/1.8.0@hiventive/stable", \

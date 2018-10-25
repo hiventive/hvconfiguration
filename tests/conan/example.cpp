@@ -1,10 +1,11 @@
 #include <iostream>
 #include <systemc>
-#include <HVConfiguration>
+#include <cci_configuration>
+#include <hv/configuration.h>
 
 int sc_main(int argc, char* argv[])
 {
-	hv::cfg::Broker hiventiveBroker("Hiventive broker");
+	::hv::cfg::Broker hiventiveBroker("Hiventive broker");
 	::cci::cci_register_broker(hiventiveBroker.getCCIBroker());
 
 	hv::cfg::Param<int> myParam("myParam",
