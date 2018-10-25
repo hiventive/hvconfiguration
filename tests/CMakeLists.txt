@@ -1,6 +1,11 @@
 # Tests
-
 file(GLOB_RECURSE TEST_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+foreach (TEST_FILE ${TEST_FILES})
+	string (FIND ${TEST_FILE} "${CMAKE_CURRENT_SOURCE_DIR}/conan" EXCLUDE_DIR_FOUND)
+	if (NOT ${EXCLUDE_DIR_FOUND} EQUAL -1)
+		list (REMOVE_ITEM TEST_FILES ${TEST_FILE})
+	endif ()
+endforeach(TEST_FILE)
 
 add_executable(${PROJECT_NAME_LOWER}-tests ${TEST_FILES})
 
