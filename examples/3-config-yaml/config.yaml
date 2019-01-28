@@ -1,0 +1,8 @@
+ConfigModule:
+  intParam: 0x1234
+  customParam: "{\"message\": \"HoldTheDoor\", \"size\": 1000}"
+
+A:
+  B:
+    C:
+      D: 10
