@@ -35,7 +35,7 @@ class HVConfigurationConan(ConanFile):
                 if compilerToolset and compilerToolset == "v120_CTP_Nov2012":
                    yamlCppNew = False
         if yamlCppNew:
-            self.requires("yaml-cpp/0.6.2@bincrafters/stable")
+            self.requires("yaml-cpp/0.6.2@hiventive/stable")
         else:
             self.requires("yaml-cpp/0.5.3@bincrafters/stable")
 
