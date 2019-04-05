@@ -13,6 +13,7 @@ option(ENABLE_CONAN "Enable Conan. This option is automatically set to ON if con
 option(ENABLE_GCOV "Enable code coverage with gcov" OFF)
 option(BUILD_TESTS "Enable tests build" OFF)
 option(BUILD_DOXYGEN "Build documentation" OFF)
+option(BUILD_EXAMPLES "Enable examples build" OFF)
 set(CONAN_PROFILE "default" CACHE STRING "Conan profile to use. Default value: default")
 set(CONAN_BUILD "missing" CACHE STRING "Conan dependencies build option. Default value: missing")
 
@@ -149,4 +150,9 @@ add_subdirectory(src)
 if(BUILD_TESTS)
 	enable_testing()
 	add_subdirectory(tests)
+endif()
+
+# Examples
+if(BUILD_EXAMPLES)
+	add_subdirectory(examples)
 endif()

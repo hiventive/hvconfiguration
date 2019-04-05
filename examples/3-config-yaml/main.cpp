@@ -1,5 +1,5 @@
 #include <systemc>
-#include <HVConfiguration>
+#include <hv/configuration.h>
 #include <cci_configuration>
 
 struct CustomStruct {

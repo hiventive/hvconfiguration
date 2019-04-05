@@ -1,5 +1,5 @@
 #include <systemc>
-#include <HVConfiguration>
+#include <hv/configuration.h>
 #include <cci_configuration>
 
 class ConfigModule : public sc_core::sc_module {

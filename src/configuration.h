@@ -1,5 +1,5 @@
 /*
- * @file HVConfiguration
+ * @file configuration.h
  * @author Guillaume Delbergue <guillaume.delbergue@hiventive.com>
  * @date June, 2018
  * @copyright Copyright (C) 2018, Hiventive.
