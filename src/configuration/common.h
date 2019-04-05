@@ -10,6 +10,8 @@
 #ifndef HV_CONFIGURATION_COMMON_H
 #define HV_CONFIGURATION_COMMON_H
 
+#include <hv/common/cplusplus.h>
+
 // HV Configuration namespace
 #define HV_CONFIGURATION_OPEN_NAMESPACE namespace hv { \
 	namespace cfg {

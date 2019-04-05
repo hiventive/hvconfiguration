@@ -12,7 +12,6 @@
 
 #include "common.h"
 #include "common-cci.h"
-#include "common-cplusplus.h"
 #include "../broker/broker.h"
 #include "../loader/loader.h"
 #include "../param/param.h"

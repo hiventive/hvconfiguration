@@ -4,6 +4,29 @@
 
 A C++ configuration library CCI compliant
 
+## Build
+
+```bash
+mkdir build
+cd build
+```
+
+If you want to use Conan:
+
+```bash
+cmake [...] -DENABLE_CONAN=ON
+make -j8
+```
+
+Otherwise:
+
+```bash
+cmake [...]
+make -j8
+```
+
+## 
+
 ## Gcov support
 
 Gcov support is available by activating the option ENABLE_GCOV in cmake (ENABLE_GCOV=ON).

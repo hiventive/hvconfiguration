@@ -11,7 +11,6 @@
 #define HV_CONFIGURATION_BROKER_CCI_H
 
 #include "../../configuration/common.h"
-#include "../../configuration/common-cplusplus.h"
 #include "../../storage/storage-if.h"
 #include "../base/broker-base.h"
 #include "broker-cci-if-helper.h"

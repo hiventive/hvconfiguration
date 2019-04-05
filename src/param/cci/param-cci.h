@@ -13,7 +13,6 @@
 #include <cci_configuration>
 
 #include "../../configuration/common.h"
-#include "../../configuration/common-cplusplus.h"
 
 HV_CONFIGURATION_OPEN_NAMESPACE
 
