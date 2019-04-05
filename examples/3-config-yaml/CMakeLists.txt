@@ -22,4 +22,3 @@ set(${EXAMPLE_NAME}-LIBRARIES ${PROJECT_NAME_LOWER}
 target_link_libraries(${EXAMPLE_NAME} ${${EXAMPLE_NAME}-LIBRARIES})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.yaml ${CMAKE_CURRENT_BINARY_DIR}/config.yaml COPYONLY)
-

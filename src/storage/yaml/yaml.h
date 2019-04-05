@@ -46,6 +46,8 @@ protected:
 
 private:
 	const std::string prefix;
+
+	const std::string filepath;
 };
 
 HV_CONFIGURATION_CLOSE_NAMESPACE

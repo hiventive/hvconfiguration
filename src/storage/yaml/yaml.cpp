@@ -14,16 +14,16 @@
 
 HV_CONFIGURATION_OPEN_NAMESPACE
 
-YAML::YAML(const std::string& filename):
-		storage() {
+YAML::YAML(const std::string& filepath):
+		storage(), filepath(filepath) {
 	try {
-		::YAML::Node configFile = ::YAML::LoadFile(filename);
+		HV_LOG_TRACE("[HVConfiguration][YAML] Opening {}", filepath);
+		::YAML::Node configFile = ::YAML::LoadFile(filepath);
 		parseNode(configFile, "");
 	} catch (const ::YAML::BadFile& e) {
-		// TODO: replace with HV_LOG(fatal, msg)
-		std::cerr << "Unable to open the configuration file: " << filename << std::endl;
+		HV_LOG_CRITICAL("[HVConfiguration][YAML] Unable to open the configuration file: {}", filepath);
 	} catch(const ::YAML::Exception& e) {
-		std::cerr << "Unable to parse the configuration file: " << e.msg << std::endl;
+		HV_LOG_CRITICAL("[HVConfiguration][YAML] Unable to parse the configuration file: {}", filepath);
 	}
 }
 
@@ -41,26 +41,32 @@ void YAML::parseNode(const ::YAML::Node& node, const std::string& parentKey) {
 					value = std::to_string(std::stoul(value, nullptr, 16));
 				}
 				storage[currentKey] = value;
-				// TODO: HV_LOG(debug, msg)
-				// std::cout << "Loaded " + currentKey << " = " << it->second << std::endl;
+				HV_LOG_DEBUG("Loaded {} = {}", currentKey,it->second.as<unsigned long>());
 				break;
 			}
 			case ::YAML::NodeType::Null :
-				std::cerr << "[YAML]: UNSUPPORTED YAML::NodeType::Null" << std::endl;
+				HV_LOG_ERROR("[YAML]: UNSUPPORTED YAML::NodeType::Null");
 				break;
 			case ::YAML::NodeType::Sequence :
-				std::cerr << "[YAML]: UNSUPPORTED YAML::NodeType::Sequence" << std::endl;
+				HV_LOG_ERROR("[YAML]: UNSUPPORTED YAML::NodeType::Sequence");
 				break;
 			case ::YAML::NodeType::Undefined :
-				std::cerr << "[YAML]: UNSUPPORTED YAML::NodeType::Undefined" << std::endl;
+				HV_LOG_ERROR("[YAML]: UNSUPPORTED YAML::NodeType::Undefined");
 				break;
 		}
 	}
 }
 
 void YAML::setValue(const std::string& key, const std::string& value) {
-	// TODO
-	std::cerr << "[YAML]: UNSUPPORTED setValue" << std::endl;
+	HV_LOG_DEBUG("YAML::setValue");
+
+	storage[getPrefixedKey(key)] = value;
+	::YAML::Emitter out;
+	out << ::YAML::BeginSeq;
+	out << storage;
+	out << ::YAML::EndSeq;
+
+	HV_LOG_WARNING("[YAML]: UNSUPPORTED setValue");
 }
 
 std::string YAML::getValue(const std::string& key) const {

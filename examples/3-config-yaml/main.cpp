@@ -1,3 +1,6 @@
+#include <hv/common/log-level.h>
+//#define HV_LOG_ACTIVE_LEVEL HV_LOG_LEVEL_TRACE
+
 #include <systemc>
 #include <hv/configuration.h>
 #include <cci_configuration>
@@ -39,6 +42,10 @@ private:
 
 int sc_main(int argc, char* argv[])
 {
+	spdlog::set_level(spdlog::level::debug);
+
+	HV_LOG_DEBUG("Example 3");
+
 	// Load configuration file
 	hv::cfg::YAML yamlConfig("config.yaml");
 

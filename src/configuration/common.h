@@ -11,6 +11,7 @@
 #define HV_CONFIGURATION_COMMON_H
 
 #include <hv/common/cplusplus.h>
+#include <hv/common/log.h>
 
 // HV Configuration namespace
 #define HV_CONFIGURATION_OPEN_NAMESPACE namespace hv { \
