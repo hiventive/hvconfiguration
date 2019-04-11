@@ -21,15 +21,17 @@ YAML::YAML(const std::string& filepath):
 		::YAML::Node configFile = ::YAML::LoadFile(filepath);
 		parseNode(configFile, "");
 	} catch (const ::YAML::BadFile& e) {
-		HV_LOG_CRITICAL("Unable to open the configuration file: {}", filepath);
+		HV_LOG_CRITICAL("Unable to open the configuration file: {} with error: {}", filepath, e.what());
 	} catch(const ::YAML::Exception& e) {
 		HV_LOG_CRITICAL("Unable to parse the configuration file {} with error: {}", filepath, e.what());
+		HV_EXIT_FAILURE();
 	}
 }
 
 void YAML::parseNode(const ::YAML::Node& node, const std::string& parentKey) {
 	for (::YAML::const_iterator it = node.begin(); it != node.end(); ++it) {
 		std::string currentKey = parentKey + it->first.as<std::string>();
+		HV_LOG_TRACE("Map with current key {}", currentKey);
 		switch(it->second.Type()) {
 			case ::YAML::NodeType::Map :
 				parseNode(it->second, currentKey + ".");
@@ -63,9 +65,35 @@ void YAML::setValue(const std::string& key, const std::string& value) {
 }
 
 std::string YAML::getValue(const std::string& key) const {
+	HV_LOG_TRACE("YAML::getValue with key {}", key);
 	if (hasValue(getPrefixedKey(key))) {
-		return storage.at(getPrefixedKey(key));
-	} else {
+		if(hasNonPrefixedValue(getPrefixedKey(key))) {
+			return storage.at(getPrefixedKey(key));
+		} else {
+			std::map<std::string, std::string> valuesWithPrefix = getPrefixedValues(getPrefixedKey(key));
+			std::stringstream result;
+			result << "{";
+			bool first = true;
+			for(auto const &entry : valuesWithPrefix) {
+				std::string s = entry.first.substr(getPrefixedKey(key).size() + 1, entry.first.size() - getPrefixedKey(key).size() - 1); // .
+				if(first) {
+					first = false;
+				} else {
+					result << ", ";
+				}
+				result << "\"" << s << "\": ";
+				if(isNumber(entry.second)) {
+					result << entry.second;
+				} else {
+					result << "\"" << entry.second << "\"";
+				}
+			}
+			result << "}";
+			HV_LOG_TRACE("-- YAML::getValue {}", result.str());
+			return result.str();
+		}
+	}
+	else {
 		return std::string();
 	}
 }
@@ -85,6 +113,10 @@ std::map<std::string, std::string> YAML::getValues(const std::string& keyPrefix)
 }
 
 bool YAML::hasValue(const std::string& key) const {
+	return hasNonPrefixedValue(key) || hasPrefixedValue(getPrefixedKey(key));
+}
+
+bool YAML::hasNonPrefixedValue(const std::string& key) const {
 	return storage.find(getPrefixedKey(key)) != storage.end();
 }
 
@@ -117,6 +149,36 @@ bool YAML::isHexValue(const std::string& value) const {
 	return value.compare(0, 2, "0x") == 0
 		   && value.size() > 2
 		   && value.find_first_not_of("0123456789abcdefABCDEF", 2) == std::string::npos;
+}
+
+// Specific to YAML, a MAP can be available
+bool YAML::hasPrefixedValue(const std::string& searchPrefix) const {
+	std::map<std::string, std::string>::const_iterator i = storage.lower_bound(searchPrefix);
+	if (i != storage.end()) {
+		const std::string& key = i->first;
+		if (key.compare(0, searchPrefix.size(), searchPrefix) == 0)
+			return true;
+		HV_LOG_TRACE("YAML::hasPrefixedValue Results for prefix {}", searchPrefix);
+	}
+	HV_LOG_TRACE("YAML::hasPrefixedValue No result for prefix {}", searchPrefix);
+	return false;
+}
+
+// Specific to YAML, a MAP can be available
+std::map<std::string, std::string> YAML::getPrefixedValues(const std::string& searchPrefix) const {
+			std::map<std::string, std::string> result;
+	for(auto const &entry : storage) {
+		if (entry.first.rfind(searchPrefix, 0) == 0) {
+			result[entry.first] = entry.second;
+		}
+	}
+	return result;
+}
+
+bool YAML::isNumber(const std::string& s) const
+{
+	return !s.empty() && std::find_if(s.begin(),
+									  s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
 }
 
 HV_CONFIGURATION_CLOSE_NAMESPACE
