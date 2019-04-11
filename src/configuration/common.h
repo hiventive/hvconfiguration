@@ -14,10 +14,27 @@
 #include <hv/common/log.h>
 #include <hv/common/hvutils.h>
 
+
+
 // HV Configuration namespace
 #define HV_CONFIGURATION_OPEN_NAMESPACE namespace hv { \
 	namespace cfg {
 
 #define HV_CONFIGURATION_CLOSE_NAMESPACE } }
+
+HV_CONFIGURATION_OPEN_NAMESPACE
+
+class Broker;
+class ParamIf;
+
+Broker* getBroker();
+std::string getRelativeUniqueName(const std::string& name);
+
+// Private
+void _registerGlobalBroker(Broker* broker);
+void _unregisterGlobalBroker();
+void _registerParam(ParamIf* param);
+
+HV_CONFIGURATION_CLOSE_NAMESPACE
 
 #endif // HV_CONFIGURATION_COMMON_H

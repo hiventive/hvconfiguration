@@ -1,5 +1,5 @@
 #include <hv/common/log-level.h>
-#define HV_LOG_ACTIVE_LEVEL HV_LOG_LEVEL_DEBUG
+#define HV_LOG_ACTIVE_LEVEL HV_LOG_LEVEL_TRACE
 
 #include <systemc>
 #include <hv/configuration.h>
@@ -59,6 +59,7 @@ public:
 	SimulationModule(sc_core::sc_module_name name) :
 			sc_core::sc_module(name),
 			stringParam("stringParam", "test"),
+			hvBroker(hv::cfg::getBroker()),
 			cciBroker(cci::cci_get_broker()) {
 		SC_THREAD(example);
 	}
@@ -66,23 +67,40 @@ private:
 	void example() {
 		HV_LOG_INFO("SimulationModule.stringParam = {}\n", stringParam.getValue());
 
-		cci::cci_param_handle intParamHandle = cciBroker.get_param_handle("ConfigModule.intParam");
-		if (intParamHandle.is_valid()) {
-			// Display current JSON value
-			std::string currentValue = intParamHandle.get_cci_value().to_json();
-			HV_LOG_INFO("Current value of ConfigModule.intParam is 0x{:x}", std::stoi(currentValue));
+		HV_LOG_INFO("Hiventive Callback usage example");
+		std::vector<hv::cfg::ParamIf*> params = hvBroker->getParams();
+		for(auto const &param : params) {
+			HV_LOG_TRACE("{}", param->getName());
+		}
+
+		if(!hvBroker->hasParam("ConfigModule.intParam")) {
+			HV_LOG_ERROR("Unable to find ConfigModule.intParam parameter\n");
+		}
+		hv::cfg::Param<int>* intParam =
+				dynamic_cast<hv::cfg::Param<int>*>(hvBroker->getParam("ConfigModule.intParam"));
+		// ->getParamTyped<int>()
+
+		//hv::cfg::Param<int> = intParam;
+		/*cci::cci_param_typed_handle<int> int_param_typed_handle =
+												 77	          cci::cci_param_typed_handle<int>(int_param_handle);*/
+
+		if (intParam) {
+			// Display current value
+			int currentValue = intParam->getValue();
+			HV_LOG_INFO("Current value of ConfigModule.intParam is 0x{:x}", currentValue);
 
 			// Update the param's value
 			HV_LOG_INFO("Updating ConfigModule.intParam to 0x{:x}", 0xDEAD);
-			intParamHandle.set_cci_value(cci::cci_value(0xDEAD));
+			intParam->setValue(0xDEAD);
 
 			// Display new value
-			std::string newValue = intParamHandle.get_cci_value().to_json();
-			HV_LOG_INFO("New value of ConfigModule.intParam is 0x{:x}\n", std::stoi(newValue));
+			int newValue = intParam->getValue();
+			HV_LOG_INFO("New value of ConfigModule.intParam is 0x{:x}\n", newValue);
 		} else {
-			HV_LOG_ERROR("Unable to find ConfigModule.intParam parameter");
+			HV_LOG_ERROR("Unable to find ConfigModule.intParam parameter\n");
 		}
 
+		HV_LOG_INFO("CCI Callback usage example");
 		cci::cci_param_handle boolParamHandle = cciBroker.get_param_handle("ConfigModule.boolParam");
 		if (boolParamHandle.is_valid()) {
 			// Display current JSON value
@@ -103,7 +121,10 @@ private:
 
 private:
 	hv::cfg::Param<std::string> stringParam;
+
+	hv::cfg::Broker* hvBroker;
 	cci::cci_broker_handle cciBroker;
+
 };
 
 int sc_main(int argc, char* argv[])
@@ -118,7 +139,7 @@ int sc_main(int argc, char* argv[])
 	hiventiveBroker.getCCIBroker().name(); // through CCI API
 	hiventiveBroker.getName(); // through Hiventive Broker API
 
-	ConfigModule t("ConfigModule");
+	ConfigModule c("ConfigModule");
 	SimulationModule s("SimulationModule");
 
 	sc_core::sc_start();

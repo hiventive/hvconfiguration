@@ -138,6 +138,9 @@ protected:
 			const std::string& description);
 
 protected:
+	void init();
+
+protected:
 	/// Parameter name
 	std::string name;
 

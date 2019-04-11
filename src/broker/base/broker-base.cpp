@@ -106,6 +106,14 @@ std::vector<ParamIf*> BrokerBase::getParams() const {
 	return result;
 }
 
+ParamIf* BrokerBase::getParam(const std::string& paramName) {
+	if(hasParam(paramName)) {
+		return params.at(paramName);
+	} else {
+		return nullptr;
+	}
+}
+
 bool BrokerBase::hasParam(const std::string& paramName) const {
 	return params.find(paramName) != params.end();
 }

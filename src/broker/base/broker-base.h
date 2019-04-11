@@ -138,6 +138,15 @@ public:
 	// virtual ParamRange getParams(ParamPredicate& pred) const;
 
 	/**
+	 * Get parameter by name
+	 *
+	 * @param paramName Parameter name
+	 *
+	 * @return A pointer to the parameter
+	 */
+	virtual ParamIf* getParam(const std::string& paramName);
+
+	/**
 	 * Destructor
      */
 	virtual ~BrokerBase();

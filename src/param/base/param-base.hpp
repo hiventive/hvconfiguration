@@ -18,6 +18,7 @@ template<typename T>
 ParamBase<T>::ParamBase(const std::string& name,
 		const T& defaultValue) :
 	name(name), value(defaultValue), defaultValue(defaultValue) {
+	init();
 }
 
 template<typename T>
@@ -27,6 +28,15 @@ ParamBase<T>::ParamBase(const std::string& name,
 		name(name), value(defaultValue),
 		defaultValue(defaultValue),
 		description(description) {
+	init();
+}
+
+template<typename T>
+void ParamBase<T>::init() {
+	std::string hierarchicalName = getRelativeUniqueName(name);
+	HV_LOG_TRACE("Initialiazing {}", hierarchicalName);
+	name = hierarchicalName;
+	_registerParam(this);
 }
 
 template<typename T>
