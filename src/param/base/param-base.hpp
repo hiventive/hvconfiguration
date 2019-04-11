@@ -35,7 +35,7 @@ template<typename T>
 void ParamBase<T>::init() {
 	std::string hierarchicalName = getRelativeUniqueName(name);
 	HV_LOG_TRACE("Initialiazing {}", hierarchicalName);
-	name = hierarchicalName;
+	this->name = hierarchicalName;
 	_registerParam(this);
 }
 

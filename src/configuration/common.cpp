@@ -41,13 +41,13 @@ std::string getRelativeUniqueName(const std::string& name) {
 
 	// Unique name
 	// SystemC >= 2.3.2 required
-	if (!sc_core::sc_register_hierarchical_name(name.c_str())) {
-		const char* new_name = sc_core::sc_gen_unique_name(name.c_str());
+	if (!sc_core::sc_register_hierarchical_name(hierarchicalName.c_str())) {
+		const char* new_name = sc_core::sc_gen_unique_name(hierarchicalName.c_str());
 		sc_core::sc_register_hierarchical_name(new_name);
-		HV_LOG_WARNING("{} is already used in the SystemC hierarchy, using {} instead", name, new_name);
+		HV_LOG_WARNING("{} is already used in the SystemC hierarchy, using {} instead", hierarchicalName, new_name);
 		return sc_core::sc_get_hierarchical_name(new_name);
 	}
-	return sc_core::sc_get_hierarchical_name(name.c_str());
+	return sc_core::sc_get_hierarchical_name(hierarchicalName.c_str());
 }
 
 void _registerGlobalBroker(Broker* broker) {

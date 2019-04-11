@@ -83,6 +83,7 @@ bool BrokerBase::hasPresetValue(const std::string& paramName) const {
 
 void BrokerBase::addParam(ParamIf* paramBase) {
 	if(paramBase) {
+		HV_LOG_TRACE("Adding param {}", paramBase->getName());
 		params[paramBase->getName()] = paramBase;
 	}
 }
@@ -115,6 +116,7 @@ ParamIf* BrokerBase::getParam(const std::string& paramName) {
 }
 
 bool BrokerBase::hasParam(const std::string& paramName) const {
+	HV_LOG_TRACE("{}", paramName);
 	return params.find(paramName) != params.end();
 }
 

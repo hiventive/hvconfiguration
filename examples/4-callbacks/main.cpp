@@ -69,8 +69,9 @@ private:
 
 		HV_LOG_INFO("Hiventive Callback usage example");
 		std::vector<hv::cfg::ParamIf*> params = hvBroker->getParams();
+		HV_LOG_TRACE("Registered parameters: ");
 		for(auto const &param : params) {
-			HV_LOG_TRACE("{}", param->getName());
+			HV_LOG_TRACE("- {}", param->getName());
 		}
 
 		if(!hvBroker->hasParam("ConfigModule.intParam")) {
