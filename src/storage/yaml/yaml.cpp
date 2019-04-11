@@ -8,6 +8,7 @@
  */
 
 #include <iostream>
+#include <cctype>
 
 #include "../../configuration/common.h"
 #include "yaml.h"
