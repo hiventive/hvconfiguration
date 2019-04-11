@@ -11,14 +11,11 @@ mkdir build
 cd build
 ```
 
-If you want to use Conan:
+Options you can append to CMake:
 
-```bash
-cmake [...] -DENABLE_CONAN=ON
-make -j8
-```
-
-Otherwise:
+- `-DENABLE_CONAN=ON`: enable Conan support
+- `-DBUILD_EXAMPLES=ON`: build examples
+- `-DBUILD_TESTS=ON`: build tests
 
 ```bash
 cmake [...]

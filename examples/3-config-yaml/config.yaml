@@ -1,6 +1,9 @@
 ConfigModule:
   intParam: 0x1234
-  customParam: "{\"message\": \"HoldTheDoor\", \"size\": 1000}"
+  # customParam: "{\"message\": \"HoldTheDoor\", \"size\": 1000}" # Another way to declare maps
+  customParam:
+    message: "HoldTheDoor2"
+    size: 5678
 
 A:
   B:

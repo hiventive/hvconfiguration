@@ -1,5 +1,5 @@
 #include <systemc>
-#include <HVConfiguration>
+#include <hv/configuration.h>
 #include <iostream>
 
 int sc_main(int argc, char* argv[])

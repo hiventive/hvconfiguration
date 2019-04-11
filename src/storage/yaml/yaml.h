@@ -41,11 +41,21 @@ protected:
 
 	bool isHexValue(const std::string& value) const;
 
+	bool hasNonPrefixedValue(const std::string& key) const;
+
+	std::map<std::string, std::string> getPrefixedValues(const std::string& searchPrefix) const;
+
+	bool hasPrefixedValue(const std::string& searchPrefix) const;
+
+	bool isNumber(const std::string& s) const;
+
 protected:
 	std::map<std::string, std::string> storage;
 
 private:
 	const std::string prefix;
+
+	const std::string filepath;
 };
 
 HV_CONFIGURATION_CLOSE_NAMESPACE

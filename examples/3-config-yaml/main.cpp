@@ -1,5 +1,8 @@
+#include <hv/common/log-level.h>
+#define HV_LOG_ACTIVE_LEVEL HV_LOG_LEVEL_DEBUG
+
 #include <systemc>
-#include <HVConfiguration>
+#include <hv/configuration.h>
 #include <cci_configuration>
 
 struct CustomStruct {
@@ -27,9 +30,10 @@ public:
 	}
 private:
 	void example() {
-		std::cout << std::hex << "ConfigModule.intParam = 0x" << intParam << std::dec << std::endl;
-		std::cout << "ConfigModule.mapParam.message = " << customParam.getValue().message << std::endl;
-		std::cout << "ConfigModule.mapParam.size = " << customParam.getValue().size << std::endl;
+		intParam = 0xBEEF;
+		HV_LOG_INFO("ConfigModule.intParam = 0x{:x}", intParam);
+		HV_LOG_INFO("ConfigModule.mapParam.message = {}", customParam.getValue().message);
+		HV_LOG_INFO("ConfigModule.mapParam.size = {}", customParam.getValue().size);
 	}
 
 private:
@@ -39,6 +43,10 @@ private:
 
 int sc_main(int argc, char* argv[])
 {
+	spdlog::set_level(spdlog::level::trace);
+
+	HV_LOG_DEBUG("Example 3");
+
 	// Load configuration file
 	hv::cfg::YAML yamlConfig("config.yaml");
 
@@ -48,9 +56,7 @@ int sc_main(int argc, char* argv[])
 	hiventiveBroker.getCCIBroker().name(); // through CCI API
 	hiventiveBroker.getName(); // through Hiventive Broker API
 
-	std::cout << "Preset value of A.B.C.D = "
-	          << hiventiveBroker.getCCIBroker().get_preset_cci_value("A.B.C.D")
-	          << std::endl;
+	HV_LOG_INFO("Preset value of A.B.C.D = {}", hiventiveBroker.getCCIBroker().get_preset_cci_value("A.B.C.D").get_int64());
 
 	ConfigModule t("ConfigModule");
 

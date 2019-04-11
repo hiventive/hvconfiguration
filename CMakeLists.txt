@@ -13,6 +13,8 @@ option(ENABLE_CONAN "Enable Conan. This option is automatically set to ON if con
 option(ENABLE_GCOV "Enable code coverage with gcov" OFF)
 option(BUILD_TESTS "Enable tests build" OFF)
 option(BUILD_DOXYGEN "Build documentation" OFF)
+option(BUILD_EXAMPLES "Enable examples build" OFF)
+set(LOG_LEVEL "WARNING" CACHE STRING "Log level. Value can be: TRACE, DEBUG, INFO, WARNING, ERROR or CRITICAL. Default value: WARNING")
 set(CONAN_PROFILE "default" CACHE STRING "Conan profile to use. Default value: default")
 set(CONAN_BUILD "missing" CACHE STRING "Conan dependencies build option. Default value: missing")
 
@@ -142,6 +144,23 @@ if(NOT CMAKE_BUILD_TYPE)
 	endif()
 endif()
 
+# Log level
+if(LOG_LEVEL STREQUAL "TRACE")
+	set(_HV_LOG_ACTIVE_LEVEL "HV_LOG_LEVEL_TRACE")
+elseif(LOG_LEVEL STREQUAL "DEBUG")
+	set(_HV_LOG_ACTIVE_LEVEL "HV_LOG_LEVEL_DEBUG")
+elseif(LOG_LEVEL STREQUAL "INFO")
+	set(_HV_LOG_ACTIVE_LEVEL "HV_LOG_LEVEL_INFO")
+elseif(LOG_LEVEL STREQUAL "WARNING")
+	set(_HV_LOG_ACTIVE_LEVEL "HV_LOG_LEVEL_WARNING")
+elseif(LOG_LEVEL STREQUAL "ERROR")
+	set(_HV_LOG_ACTIVE_LEVEL "HV_LOG_LEVEL_ERROR")
+elseif(LOG_LEVEL STREQUAL "CRITICAL")
+	set(_HV_LOG_ACTIVE_LEVEL "HV_LOG_LEVEL_CRITICAL")
+else()
+	message(FATAL_ERROR "Log level value is invalid. Value can be: TRACE, DEBUG, INFO, WARNING, ERROR or CRITICAL")
+endif()
+
 # Library
 add_subdirectory(src)
 
@@ -149,4 +168,9 @@ add_subdirectory(src)
 if(BUILD_TESTS)
 	enable_testing()
 	add_subdirectory(tests)
+endif()
+
+# Examples
+if(BUILD_EXAMPLES)
+	add_subdirectory(examples)
 endif()
