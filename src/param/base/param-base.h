@@ -238,6 +238,8 @@ protected:
 protected:
 	void init();
 
+	bool runPreWriteCallbacks(T value);
+
 protected:
 	/// Parameter name
 	std::string name;
@@ -280,6 +282,18 @@ private:
 
 		void clear() {
 			map.clear();
+		}
+
+		std::map<::hv::common::hvcbID_t, U> getMap() {
+			return map;
+		}
+
+		void setUsing(bool inUse) {
+			this->inUse = inUse;
+		}
+
+		bool isUsing() const {
+			return this->inUse;
 		}
 	private:
 		std::map<::hv::common::hvcbID_t, U> map;

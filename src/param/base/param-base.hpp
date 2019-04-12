@@ -46,7 +46,10 @@ const std::string& ParamBase<T>::getName() const {
 
 template<typename T>
 void ParamBase<T>::setValue(const T& value) {
-	this->value = value;
+	if(runPreWriteCallbacks(value)) {
+		this->value = value;
+	}
+	//runPostWriteCallbacks();
 }
 
 template<typename T>
@@ -202,6 +205,29 @@ bool ParamBase<T>::unregisterAllCallbacks() {
 	postWriteCallbacks.clear();
 	return true;
 }
+
+template<typename T>
+bool ParamBase<T>::runPreWriteCallbacks(T value)
+{
+	if (preWriteCallbacks.isUsing())
+		return false;
+
+	preWriteCallbacks.setUsing(true);
+
+	bool result = true;
+
+	for(auto const &preWriteCallback : preWriteCallbacks.getMap()) {
+		const ParamWriteEvent<T> ev(this->value, value, *this);
+		if (!(*preWriteCallback.second)(ev)) {
+			HV_LOG_WARNING("The new value has been rejected by callback");
+			result = false;
+		}
+	}
+
+	preWriteCallbacks.setUsing(false);
+	return result;
+}
+
 
 template<typename T>
 ::hv::common::hvcbID_t ParamBase<T>::genCallbackID() {
