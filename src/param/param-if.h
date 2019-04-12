@@ -12,6 +12,7 @@
 
 #include "../configuration/common.h"
 #include "base/param-base.h"
+#include "param-callback-if.h"
 
 HV_CONFIGURATION_OPEN_NAMESPACE
 

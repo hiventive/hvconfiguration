@@ -15,9 +15,9 @@ public:
 		SC_THREAD(example);
 
 		// Register CCI callbacks on intParam
-		preReadCb = boolParam.register_pre_read_callback(&ConfigModule::typedPreReadCallback, this);
-		preWriteCb = boolParam.register_pre_write_callback(&ConfigModule::typedPreWriteCallback, this);
-		postWriteCb = boolParam.register_post_write_callback(&ConfigModule::typedPostWriteCallback, this);
+		cciPreReadCb = boolParam.register_pre_read_callback(&ConfigModule::typedPreReadCallback, this);
+		cciPreWriteCb = boolParam.register_pre_write_callback(&ConfigModule::typedPreWriteCallback, this);
+		cciPostWriteCb = boolParam.register_post_write_callback(&ConfigModule::typedPostWriteCallback, this);
 	}
 private:
 	void example() {
@@ -47,10 +47,13 @@ private:
 	hv::cfg::Param<int> intParam;
 	cci::cci_param<bool> boolParam;
 
-	// Callback pointers
-	cci::cci_callback_untyped_handle preReadCb;
-	cci::cci_callback_untyped_handle preWriteCb;
-	cci::cci_callback_untyped_handle postWriteCb;
+	// CCI Callback pointers
+	cci::cci_callback_untyped_handle cciPreReadCb;
+	cci::cci_callback_untyped_handle cciPreWriteCb;
+	cci::cci_callback_untyped_handle cciPostWriteCb;
+
+	// HV Callback
+
 };
 
 class SimulationModule : public sc_core::sc_module {
@@ -80,10 +83,6 @@ private:
 		hv::cfg::Param<int>* intParam =
 				dynamic_cast<hv::cfg::Param<int>*>(hvBroker->getParam("ConfigModule.intParam"));
 		// ->getParamTyped<int>()
-
-		//hv::cfg::Param<int> = intParam;
-		/*cci::cci_param_typed_handle<int> int_param_typed_handle =
-												 77	          cci::cci_param_typed_handle<int>(int_param_handle);*/
 
 		if (intParam) {
 			// Display current value
