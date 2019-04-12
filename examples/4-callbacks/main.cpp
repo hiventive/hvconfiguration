@@ -51,25 +51,25 @@ private:
 
 	// HV Pre Read Callback
 	bool hvTypedPreReadCallback(const hv::cfg::ParamReadEvent<int>& ev) {
-		HV_LOG_INFO("hvTypedPreReadCallback: {} = {} by {}", ev.ph.getName(), ev.value);
+		HV_LOG_INFO("hvTypedPreReadCallback: {} = 0x{:x}", ev.ph.getName(), ev.value);
 		return true;
 	}
 
 	// HV Post Read Callback
 	void hvTypedPostReadCallback(const hv::cfg::ParamReadEvent<int>& ev) {
-		HV_LOG_INFO("hvTypedPostReadCallback: {} = {} by {}", ev.ph.getName(), ev.value);
+		HV_LOG_INFO("hvTypedPostReadCallback: {} = 0x{:x}", ev.ph.getName(), ev.value);
 	}
 
 	// HV Pre Write Callback
 	bool hvTypedPreWriteCallback(const hv::cfg::ParamWriteEvent<int>& ev) {
-		HV_LOG_INFO("hvTypedPreWriteCallback: {} update from {} to {} by {}", ev.ph.getName(),
+		HV_LOG_INFO("hvTypedPreWriteCallback: {} update from 0x{:x} to 0x{:x}", ev.ph.getName(),
 					ev.oldValue, ev.newValue);
 		return true;
 	}
 
 	// HV Post Write Callback
 	void hvTypedPostWriteCallback(const hv::cfg::ParamWriteEvent<int>& ev) {
-		HV_LOG_INFO("hvTypedPostWriteCallback: {} updated from {} to {} by {}", ev.ph.getName(),
+		HV_LOG_INFO("hvTypedPostWriteCallback: {} updated from 0x{:x} to 0x{:x}", ev.ph.getName(),
 					ev.oldValue, ev.newValue);
 	}
 
@@ -162,7 +162,7 @@ private:
 
 int sc_main(int argc, char* argv[])
 {
-	spdlog::set_level(spdlog::level::trace);
+	hv::common::setLogLevel(hv::common::log::trace);
 
 	HV_LOG_DEBUG("Example 4");
 
