@@ -17,7 +17,7 @@ HV_CONFIGURATION_OPEN_NAMESPACE
 template<typename T>
 ParamBase<T>::ParamBase(const std::string& name,
 		const T& defaultValue) :
-	name(name), value(defaultValue), defaultValue(defaultValue) {
+	name(name), value(defaultValue), defaultValue(defaultValue), cbIDCpt(0)  {
 	init();
 }
 
@@ -27,7 +27,8 @@ ParamBase<T>::ParamBase(const std::string& name,
 		const std::string& description) :
 		name(name), value(defaultValue),
 		defaultValue(defaultValue),
-		description(description) {
+		description(description),
+		cbIDCpt(0) {
 	init();
 }
 
@@ -111,7 +112,7 @@ bool ParamBase<T>::hasCallbacks() const {
 template<typename T>
 ::hv::common::hvcbID_t ParamBase<T>::registerPreReadCallback(const PreReadCallback<T> &cb) {
 	::hv::common::hvcbID_t idTmp = this->genCallbackID();
-	preReadCallbacks.setCb(this->genCallbackID(), cb);
+	preReadCallbacks.setCb(idTmp, cb);
 	return idTmp;
 }
 
@@ -125,7 +126,7 @@ template<typename U>
 template<typename T>
 ::hv::common::hvcbID_t ParamBase<T>::registerPostReadCallback(const PostReadCallback<T> &cb) {
 	::hv::common::hvcbID_t idTmp = this->genCallbackID();
-	postReadCallbacks.setCb(this->genCallbackID(), cb);
+	postReadCallbacks.setCb(idTmp, cb);
 	return idTmp;
 }
 
@@ -138,7 +139,7 @@ template<typename U>
 template<typename T>
 ::hv::common::hvcbID_t ParamBase<T>::registerPreWriteCallback(const PreWriteCallback<T> &cb) {
 	::hv::common::hvcbID_t idTmp = this->genCallbackID();
-	preWriteCallbacks.setCb(this->genCallbackID(), cb);
+	preWriteCallbacks.setCb(idTmp, cb);
 	return idTmp;
 }
 
@@ -151,7 +152,7 @@ template<typename U>
 template<typename T>
 ::hv::common::hvcbID_t ParamBase<T>::registerPostWriteCallback(const PostWriteCallback<T> &cb) {
 	::hv::common::hvcbID_t idTmp = this->genCallbackID();
-	postWriteCallbacks.setCb(this->genCallbackID(), cb);
+	postWriteCallbacks.setCb(idTmp, cb);
 	return idTmp;
 }
 
@@ -209,16 +210,17 @@ bool ParamBase<T>::unregisterAllCallbacks() {
 template<typename T>
 bool ParamBase<T>::runPreWriteCallbacks(T value)
 {
+	HV_LOG_TRACE("runPreWriteCallbacks with new value");
 	if (preWriteCallbacks.isUsing())
 		return false;
 
 	preWriteCallbacks.setUsing(true);
 
 	bool result = true;
-
 	for(auto const &preWriteCallback : preWriteCallbacks.getMap()) {
+		HV_LOG_CRITICAL("runPreWriteCallback {}");
 		const ParamWriteEvent<T> ev(this->value, value, *this);
-		if (!(*preWriteCallback.second)(ev)) {
+		if (!(preWriteCallback.second)(ev)) {
 			HV_LOG_WARNING("The new value has been rejected by callback");
 			result = false;
 		}

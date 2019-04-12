@@ -263,7 +263,12 @@ private:
 		};
 
 		void setCb(::hv::common::hvcbID_t id, U cb) {
-			map[id] = cb;
+			if(!hasID(id)) {
+				map.insert(std::pair<::hv::common::hvcbID_t, U>(id, cb));
+				//map[id] = cb;
+			} else {
+				HV_LOG_ERROR("A callback with this ID is already registered.");
+			}
 		}
 
 		bool hasID(::hv::common::hvcbID_t id) {

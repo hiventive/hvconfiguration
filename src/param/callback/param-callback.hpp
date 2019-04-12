@@ -7,6 +7,9 @@
  * @brief Parameter callback implementation
  */
 
+#ifndef HV_CONFIGURATION_PARAM_CALLBACK_IMPL_H
+#define HV_CONFIGURATION_PARAM_CALLBACK_IMPL_H
+
 #include "param-callback.h"
 
 HV_CONFIGURATION_OPEN_NAMESPACE
@@ -22,3 +25,5 @@ ParamWriteEvent<T>::ParamWriteEvent(const T& oldValue, const T& newValue, const 
 }
 
 HV_CONFIGURATION_CLOSE_NAMESPACE
+
+#endif // HV_CONFIGURATION_PARAM_CALLBACK_IMPL_H

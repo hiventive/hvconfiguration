@@ -121,4 +121,6 @@ struct PostWriteCallback: public ::hv::common::CallbackImpl<void(const ParamWrit
 
 HV_CONFIGURATION_CLOSE_NAMESPACE
 
+#include "param-callback.hpp"
+
 #endif // HV_CONFIGURATION_PARAM_CALLBACK_H
