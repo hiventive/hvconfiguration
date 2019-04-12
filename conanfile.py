@@ -16,7 +16,7 @@ class HVConfigurationConan(ConanFile):
     exports = "settings.yml"
     exports_sources = "src/*", "CMakeLists.txt", "cmake/*"
     requires = "gtest/1.8.0@hiventive/stable", \
-               "hvcommon/[>=0.3.0,<1]@hiventive/testing", \
+               "hvcommon/[>=0.3.1,<1]@hiventive/testing", \
                "cci/[>=1.0.0,<2]@hiventive/stable"
 
     def _configure_cmake(self):
