@@ -14,10 +14,16 @@ public:
 		boolParam("boolParam", false) {
 		SC_THREAD(example);
 
-		// Register CCI callbacks on intParam
-		cciPreReadCb = boolParam.register_pre_read_callback(&ConfigModule::typedPreReadCallback, this);
-		cciPreWriteCb = boolParam.register_pre_write_callback(&ConfigModule::typedPreWriteCallback, this);
-		cciPostWriteCb = boolParam.register_post_write_callback(&ConfigModule::typedPostWriteCallback, this);
+		// Register CCI callbacks on boolParam
+		cciPreReadCb = boolParam.register_pre_read_callback(&ConfigModule::cciTypedPreReadCallback, this);
+		cciPreWriteCb = boolParam.register_pre_write_callback(&ConfigModule::cciTypedPreWriteCallback, this);
+		cciPostWriteCb = boolParam.register_post_write_callback(&ConfigModule::cciTypedPostWriteCallback, this);
+
+		// Register HV callbacks on intParam
+		hvPreReadCbID = intParam.registerPreReadCallback(&ConfigModule::hvTypedPreReadCallback, this);
+		hvPostReadCbID = intParam.registerPostReadCallback(&ConfigModule::hvTypedPostReadCallback, this);
+		hvPreWriteCbID = intParam.registerPreWriteCallback(&ConfigModule::hvTypedPreWriteCallback, this);
+		hvPostWriteCbID = intParam.registerPostWriteCallback(&ConfigModule::hvTypedPostWriteCallback, this);
 	}
 private:
 	void example() {
@@ -26,21 +32,45 @@ private:
 	}
 
 	// CCI Pre Read Callback
-	void typedPreReadCallback(const cci::cci_param_read_event<bool>& ev) {
-		HV_LOG_INFO("typedPreReadCallback: {} = {} by {}", ev.param_handle.name(), ev.value, ev.originator.name());
+	void cciTypedPreReadCallback(const cci::cci_param_read_event<bool>& ev) {
+		HV_LOG_INFO("cciTypedPreReadCallback: {} = {} by {}", ev.param_handle.name(), ev.value, ev.originator.name());
 	}
 
 	// CCI Pre Write Callback
-	bool typedPreWriteCallback(const cci::cci_param_write_event<bool>& ev) {
-		HV_LOG_INFO("typedPreWriteCallback: {} update from {} to {} by {}", ev.param_handle.name(),
+	bool cciTypedPreWriteCallback(const cci::cci_param_write_event<bool>& ev) {
+		HV_LOG_INFO("cciTypedPreWriteCallback: {} update from {} to {} by {}", ev.param_handle.name(),
 				ev.old_value, ev.new_value, ev.originator.name());
 		return true;
 	}
 
 	// CCI Post Write Callback
-	void typedPostWriteCallback(const cci::cci_param_write_event<bool>& ev) {
-		HV_LOG_INFO("typedPostWriteCallback: {} updated from {} to {} by {}", ev.param_handle.name(),
+	void cciTypedPostWriteCallback(const cci::cci_param_write_event<bool>& ev) {
+		HV_LOG_INFO("cciTypedPostWriteCallback: {} updated from {} to {} by {}", ev.param_handle.name(),
 				ev.old_value, ev.new_value, ev.originator.name());
+	}
+
+	// HV Pre Read Callback
+	bool hvTypedPreReadCallback(const hv::cfg::ParamReadEvent<int>& ev) {
+		HV_LOG_INFO("hvTypedPreReadCallback: {} = {} by {}", ev.ph.getName(), ev.value);
+		return true;
+	}
+
+	// HV Post Read Callback
+	void hvTypedPostReadCallback(const hv::cfg::ParamReadEvent<int>& ev) {
+		HV_LOG_INFO("hvTypedPostReadCallback: {} = {} by {}", ev.ph.getName(), ev.value);
+	}
+
+	// HV Pre Write Callback
+	bool hvTypedPreWriteCallback(const hv::cfg::ParamWriteEvent<int>& ev) {
+		HV_LOG_INFO("hvTypedPreWriteCallback: {} update from {} to {} by {}", ev.ph.getName(),
+					ev.oldValue, ev.newValue);
+		return true;
+	}
+
+	// HV Post Write Callback
+	void hvTypedPostWriteCallback(const hv::cfg::ParamWriteEvent<int>& ev) {
+		HV_LOG_INFO("hvTypedPostWriteCallback: {} updated from {} to {} by {}", ev.ph.getName(),
+					ev.oldValue, ev.newValue);
 	}
 
 private:
@@ -53,7 +83,10 @@ private:
 	cci::cci_callback_untyped_handle cciPostWriteCb;
 
 	// HV Callback
-
+	::hv::common::hvcbID_t hvPreReadCbID;
+	::hv::common::hvcbID_t hvPostReadCbID;
+	::hv::common::hvcbID_t hvPreWriteCbID;
+	::hv::common::hvcbID_t hvPostWriteCbID;
 };
 
 class SimulationModule : public sc_core::sc_module {

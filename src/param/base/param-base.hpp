@@ -113,10 +113,23 @@ template<typename T>
 }
 
 template<typename T>
+template<typename U>
+::hv::common::hvcbID_t ParamBase<T>::registerPreReadCallback(bool (U::*cb)(const ParamReadEvent<T>&), U *obj) {
+	return registerPreReadCallback(std::bind(cb, obj, std::placeholders::_1));
+}
+
+
+template<typename T>
 ::hv::common::hvcbID_t ParamBase<T>::registerPostReadCallback(const PostReadCallback<T> &cb) {
 	::hv::common::hvcbID_t idTmp = this->genCallbackID();
 	postReadCallbacks.setCb(this->genCallbackID(), cb);
 	return idTmp;
+}
+
+template<typename T>
+template<typename U>
+::hv::common::hvcbID_t ParamBase<T>::registerPostReadCallback(void (U::*cb)(const ParamReadEvent<T>&), U *obj) {
+	return registerPostReadCallback(std::bind(cb, obj, std::placeholders::_1));
 }
 
 template<typename T>
@@ -127,6 +140,12 @@ template<typename T>
 }
 
 template<typename T>
+template<typename U>
+::hv::common::hvcbID_t ParamBase<T>::registerPreWriteCallback(bool (U::*cb)(const ParamWriteEvent<T>&), U *obj) {
+	return registerPreWriteCallback(std::bind(cb, obj, std::placeholders::_1));
+}
+
+template<typename T>
 ::hv::common::hvcbID_t ParamBase<T>::registerPostWriteCallback(const PostWriteCallback<T> &cb) {
 	::hv::common::hvcbID_t idTmp = this->genCallbackID();
 	postWriteCallbacks.setCb(this->genCallbackID(), cb);
@@ -134,9 +153,15 @@ template<typename T>
 }
 
 template<typename T>
+template<typename U>
+::hv::common::hvcbID_t ParamBase<T>::registerPostWriteCallback(void (U::*cb)(const ParamWriteEvent<T>&), U *obj) {
+	return registerPostWriteCallback(std::bind(cb, obj, std::placeholders::_1));
+}
+
+template<typename T>
 bool ParamBase<T>::unregisterPreReadCallback(const ::hv::common::hvcbID_t &id) {
 	if(preReadCallbacks.hasID(id)) {
-
+		preReadCallbacks.erase(id);
 		return true;
 	}
 	return false;
@@ -144,33 +169,29 @@ bool ParamBase<T>::unregisterPreReadCallback(const ::hv::common::hvcbID_t &id) {
 
 template<typename T>
 bool ParamBase<T>::unregisterPostReadCallback(const ::hv::common::hvcbID_t &id) {
-/*	PostReadCallbackVector::iterator it = getPostReadCallbackIt(id);
-	if (it == postReadCbVect.cend()) {
-		return false;
+	if(postReadCallbacks.hasID(id)) {
+		postReadCallbacks.erase(id);
+		return true;
 	}
-	postReadCbVect.erase(it);*/
-	return true;
-
+	return false;
 }
 
 template<typename T>
 bool ParamBase<T>::unregisterPreWriteCallback(const ::hv::common::hvcbID_t &id) {
-/*	PreWriteCallbackVector::iterator it = getPreWriteCallbackIt(id);
-	if (it == preWriteCbVect.cend()) {
-		return false;
+	if(preWriteCallbacks.hasID(id)) {
+		preWriteCallbacks.erase(id);
+		return true;
 	}
-	preWriteCbVect.erase(it);*/
-	return true;
+	return false;
 }
 
 template<typename T>
 bool ParamBase<T>::unregisterPostWriteCallback(const ::hv::common::hvcbID_t &id) {
-/*	PostWriteCallbackVector::iterator it = getPostWriteCallbackIt(id);
-	if (it == postWriteCbVect.cend()) {
-		return false;
+	if(postWriteCallbacks.hasID(id)) {
+		postWriteCallbacks.erase(id);
+		return true;
 	}
-	postWriteCbVect.erase(it);*/
-	return true;
+	return false;
 }
 
 template<typename T>

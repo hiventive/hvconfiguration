@@ -60,16 +60,64 @@ struct ParamWriteEvent {
 };
 
 template <typename T = void>
-struct PreReadCallback: ::hv::common::CallbackImpl<bool(const ParamReadEvent<T>&)> {};
+struct PreReadCallback: public ::hv::common::CallbackImpl<bool(const ParamReadEvent<T>&)> {
+	PreReadCallback(): ::hv::common::CallbackImpl<bool(const ParamReadEvent<T>&)>() {}
+
+	template<typename U>
+	PreReadCallback(const U &fIn): ::hv::common::CallbackImpl<bool(const ParamReadEvent<T>&)>(fIn) {}
+
+	template<typename U>
+	PreReadCallback(bool (U::*cbIn)(const ParamReadEvent<T>&), U *objIn):
+		::hv::common::CallbackImpl<bool(const ParamReadEvent<T>&)>(cbIn, objIn) {}
+
+	PreReadCallback(const ::hv::common::CallbackImpl<bool(const ParamReadEvent<T>&)> &src):
+		::hv::common::CallbackImpl<bool(const ParamReadEvent<T>&)>(src) {}
+};
 
 template <typename T = void>
-struct PostReadCallback: ::hv::common::CallbackImpl<void(const ParamReadEvent<T>&)> {};
+struct PostReadCallback: public ::hv::common::CallbackImpl<void(const ParamReadEvent<T>&)> {
+	PostReadCallback(): ::hv::common::CallbackImpl<void(const ParamReadEvent<T>&)>() {}
+
+	template<typename U>
+	PostReadCallback(const U &fIn): ::hv::common::CallbackImpl<void(const ParamReadEvent<T>&)>(fIn) {}
+
+	template<typename U>
+	PostReadCallback(bool (U::*cbIn)(const ParamReadEvent<T>&), U *objIn):
+			::hv::common::CallbackImpl<void(const ParamReadEvent<T>&)>(cbIn, objIn) {}
+
+	PostReadCallback(const ::hv::common::CallbackImpl<void(const ParamReadEvent<T>&)> &src):
+			::hv::common::CallbackImpl<void(const ParamReadEvent<T>&)>(src) {}
+};
 
 template <typename T = void>
-struct PreWriteCallback: ::hv::common::CallbackImpl<bool(const ParamWriteEvent<T>&)> {};
+struct PreWriteCallback: public ::hv::common::CallbackImpl<bool(const ParamWriteEvent<T>&)> {
+	PreWriteCallback(): ::hv::common::CallbackImpl<bool(const ParamWriteEvent<T>&)>() {}
+
+	template<typename U>
+	PreWriteCallback(const U &fIn): ::hv::common::CallbackImpl<bool(const ParamWriteEvent<T>&)>(fIn) {}
+
+	template<typename U>
+	PreWriteCallback(bool (U::*cbIn)(const ParamWriteEvent<T>&), U *objIn):
+			::hv::common::CallbackImpl<bool(const ParamWriteEvent<T>&)>(cbIn, objIn) {}
+
+	PreWriteCallback(const ::hv::common::CallbackImpl<bool(const ParamWriteEvent<T>&)> &src):
+			::hv::common::CallbackImpl<bool(const ParamWriteEvent<T>&)>(src) {}
+};
 
 template <typename T = void>
-struct PostWriteCallback: ::hv::common::CallbackImpl<void(const ParamWriteEvent<T>&)> {};
+struct PostWriteCallback: public ::hv::common::CallbackImpl<void(const ParamWriteEvent<T>&)> {
+	PostWriteCallback(): ::hv::common::CallbackImpl<void(const ParamWriteEvent<T>&)>() {}
+
+	template<typename U>
+	PostWriteCallback(const U &fIn): ::hv::common::CallbackImpl<void(const ParamWriteEvent<T>&)>(fIn) {}
+
+	template<typename U>
+	PostWriteCallback(bool (U::*cbIn)(const ParamWriteEvent<T>&), U *objIn):
+			::hv::common::CallbackImpl<void(const ParamWriteEvent<T>&)>(cbIn, objIn) {}
+
+	PostWriteCallback(const ::hv::common::CallbackImpl<void(const ParamWriteEvent<T>&)> &src):
+			::hv::common::CallbackImpl<void(const ParamWriteEvent<T>&)>(src) {}
+};
 
 HV_CONFIGURATION_CLOSE_NAMESPACE
 

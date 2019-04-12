@@ -122,6 +122,9 @@ public:
 	 */
 	virtual ::hv::common::hvcbID_t registerPreReadCallback(const PreReadCallback<T> &cb) override;
 
+	template<typename U>
+	::hv::common::hvcbID_t registerPreReadCallback(bool (U::*cb)(const ParamReadEvent<T>&), U *obj);
+
 	/**
 	 * Param a post read callback
 	 *
@@ -130,6 +133,9 @@ public:
 	 * @return Callback ID
 	 */
 	virtual ::hv::common::hvcbID_t registerPostReadCallback(const PostReadCallback<T> &cb) override;
+
+	template<typename U>
+	::hv::common::hvcbID_t registerPostReadCallback(void (U::*cb)(const ParamReadEvent<T>&), U *obj);
 
 	/**
 	 * Param a pre write callback
@@ -140,6 +146,9 @@ public:
 	 */
 	virtual ::hv::common::hvcbID_t registerPreWriteCallback(const PreWriteCallback<T> &cb) override;
 
+	template<typename U>
+	::hv::common::hvcbID_t registerPreWriteCallback(bool (U::*cb)(const ParamWriteEvent<T>&), U *obj);
+
 	/**
 	 * Param a post write callback
 	 *
@@ -148,6 +157,9 @@ public:
 	 * @return Callback ID
 	 */
 	virtual ::hv::common::hvcbID_t registerPostWriteCallback(const PostWriteCallback<T> &cb) override;
+
+	template<typename U>
+	::hv::common::hvcbID_t registerPostWriteCallback(void (U::*cb)(const ParamWriteEvent<T>&), U *obj);
 
 	/**
 	 * Unregister a pre read callback
