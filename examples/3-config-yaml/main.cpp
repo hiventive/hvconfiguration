@@ -43,9 +43,9 @@ private:
 
 int sc_main(int argc, char* argv[])
 {
-	spdlog::set_level(spdlog::level::trace);
+	hv::common::setLogLevel(hv::common::log::trace);
 
-	HV_LOG_DEBUG("Example 3");
+
 
 	// Load configuration file
 	hv::cfg::YAML yamlConfig("config.yaml");
