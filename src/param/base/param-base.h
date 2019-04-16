@@ -244,10 +244,10 @@ protected:
 	 *
 	 * @param name Parameter name
 	 */
-	virtual void setName(const std::string&);
+	virtual void setName(const std::string&) override;
 
 protected:
-	void initName();
+	void init();
 
 	void runPreReadCallbacks(const T& value) const;
 

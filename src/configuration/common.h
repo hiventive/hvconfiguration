@@ -28,7 +28,8 @@ class Broker;
 class ParamIf;
 
 Broker* getBroker();
-std::string getRelativeUniqueName(const std::string& name);
+std::string generateRelativeUniqueName(const std::string& name);
+bool registerName(const std::string& name);
 
 // Private
 void _registerGlobalBroker(Broker* broker);

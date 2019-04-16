@@ -44,13 +44,6 @@ public:
 			::cci::cci_name_type nameType = ::cci::CCI_RELATIVE_NAME,
 			const ::cci::cci_originator& originator = ::cci::cci_originator());
 
-	/**
- 	 * Get parameter name
-	 *
- 	 * @return Parameter name
- 	 */
-	virtual const std::string& getName() const override;
-
 public:
 	using ParamBase<T>::operator=;
 
@@ -62,9 +55,6 @@ public:
 protected:
 	/// Parameter initialization
 	void init();
-
-	/// Name setter
-	void setName(const std::string& name) override;
 
 private:
 	/// Associated CCI parameter

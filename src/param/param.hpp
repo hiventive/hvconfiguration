@@ -72,20 +72,7 @@ Param<T, TM>::Param(const std::string& name,
 
 template<typename T, ::cci::cci_param_mutable_type TM>
 void Param<T, TM>::init() {
-	std::string requestName = getName();
-
-	std::string hierarchicalName = getRelativeUniqueName(getName());
-
-	std::string uniqueName = std::string(::cci::cci_gen_unique_name(paramBase.getName().c_str()));
-	if (uniqueName != paramBase.name && (::sc_core::sc_hierarchical_name_exists(paramBase.getName().c_str())
-										 || brokerHandle.has_preset_value(paramBase.getName()))) {
-		paramBase.setName(uniqueName);
-	}
-}
-
-template<typename T, ::cci::cci_param_mutable_type TM>
-void Param<T, TM>::setName(const std::string& name) {
-	this->name = name;
+	// Foo
 }
 
 template<typename T, ::cci::cci_param_mutable_type TM>

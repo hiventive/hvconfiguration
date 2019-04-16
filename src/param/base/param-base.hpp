@@ -17,13 +17,13 @@ HV_CONFIGURATION_OPEN_NAMESPACE
 template<typename T>
 ParamBase<T>::ParamBase(const std::string& name, const T& defaultValue):
 	name(name), value(defaultValue), defaultValue(defaultValue), cbIDCpt(0) {
-	initName();
+	init();
 }
 
 template<typename T>
 ParamBase<T>::ParamBase(const std::string& name, const T& defaultValue, const std::string& description):
 		name(name), value(defaultValue), defaultValue(defaultValue), description(description), cbIDCpt(0) {
-	initName();
+	init();
 }
 
 template<typename T>
@@ -36,15 +36,17 @@ ParamBase<T>::ParamBase(const ParamBase &paramBase):
 }
 
 template<typename T>
-void ParamBase<T>::initName() {
+void ParamBase<T>::init() {
 	HV_LOG_TRACE("Initialiazing {}", name);
 
 	// Hiventive parameter do not support parameter destruction / resurrection.
 	// We only support relative unique name if not used by CCI
-	std::string uniqueName = generateRelativeUniqueName(name);
+	std::string hierarchicalUniqueName = generateRelativeUniqueName(name);
 
-	// We set uniqueName (maybe be updated later by CCI initialization)
-	name = uniqueName;
+	registerName(hierarchicalUniqueName);
+
+	// We set hierarchicalUniqueName
+	name = hierarchicalUniqueName;
 }
 
 template<typename T>
