@@ -105,9 +105,15 @@ private:
 
 		HV_LOG_INFO("Hiventive Callback usage example");
 		std::vector<hv::cfg::ParamIf*> params = hvBroker->getParams();
-		HV_LOG_TRACE("Registered parameters: ");
+		HV_LOG_TRACE("Registered parameters through Hiventive broker:");
 		for(auto const &param : params) {
 			HV_LOG_TRACE("- {}", param->getName());
+		}
+
+		std::vector<::cci::cci_param_untyped_handle> paramsCCI = ::cci::cci_get_broker().get_param_handles();
+		HV_LOG_TRACE("Registered parameters through CCI broker:");
+		for(auto const &param : paramsCCI) {
+			HV_LOG_TRACE("- {}", param.name());
 		}
 
 		if(!hvBroker->hasParam("ConfigModule.intParam")) {

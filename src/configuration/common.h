@@ -34,6 +34,10 @@ std::string getRelativeUniqueName(const std::string& name);
 void _registerGlobalBroker(Broker* broker);
 void _unregisterGlobalBroker();
 void _registerParam(ParamIf* param);
+void _hasPresetValue(const std::string& name);
+
+template <typename T>
+T convertStringToT(const std::string& str);
 
 HV_CONFIGURATION_CLOSE_NAMESPACE
 

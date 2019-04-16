@@ -23,7 +23,6 @@ template<typename T>
 class ParamBase : public ParamIf, public ParamCallbackIf<T> {
 	template<typename U, ::cci::cci_param_mutable_type TM> friend class ParamCCI;
 public:
-
 	/**
 	 * Get parameter name
 	 *
@@ -235,10 +234,28 @@ protected:
 			const T& defaultValue,
 			const std::string& description);
 
-protected:
-	void init();
+	/**
+	 * Copy constructor
+	 */
+	ParamBase(const ParamBase &paramBase);
 
-	bool runPreWriteCallbacks(T value);
+	/**
+	 * Set parameter name
+	 *
+	 * @param name Parameter name
+	 */
+	virtual void setName(const std::string&);
+
+protected:
+	void initName();
+
+	void runPreReadCallbacks(const T& value) const;
+
+	void runPostReadCallbacks(const T& value) const;
+
+	bool runPreWriteCallbacks(const T& value) const;
+
+	void runPostWriteCallbacks(const T& oldValue, const T& newValue) const;
 
 protected:
 	/// Parameter name
@@ -271,7 +288,7 @@ private:
 			}
 		}
 
-		bool hasID(::hv::common::hvcbID_t id) {
+		bool hasID(::hv::common::hvcbID_t id) const {
 			return map.find(id) != map.end() ;
 		}
 
@@ -289,11 +306,11 @@ private:
 			map.clear();
 		}
 
-		std::map<::hv::common::hvcbID_t, U> getMap() {
+		std::map<::hv::common::hvcbID_t, U> getMap() const {
 			return map;
 		}
 
-		void setUsing(bool inUse) {
+		void setUsing(bool inUse) const {
 			this->inUse = inUse;
 		}
 

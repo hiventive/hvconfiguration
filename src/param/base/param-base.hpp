@@ -15,47 +15,58 @@
 HV_CONFIGURATION_OPEN_NAMESPACE
 
 template<typename T>
-ParamBase<T>::ParamBase(const std::string& name,
-		const T& defaultValue) :
-	name(name), value(defaultValue), defaultValue(defaultValue), cbIDCpt(0)  {
-	init();
+ParamBase<T>::ParamBase(const std::string& name, const T& defaultValue):
+	name(name), value(defaultValue), defaultValue(defaultValue), cbIDCpt(0) {
+	initName();
 }
 
 template<typename T>
-ParamBase<T>::ParamBase(const std::string& name,
-		const T& defaultValue,
-		const std::string& description) :
-		name(name), value(defaultValue),
-		defaultValue(defaultValue),
-		description(description),
-		cbIDCpt(0) {
-	init();
+ParamBase<T>::ParamBase(const std::string& name, const T& defaultValue, const std::string& description):
+		name(name), value(defaultValue), defaultValue(defaultValue), description(description), cbIDCpt(0) {
+	initName();
 }
 
 template<typename T>
-void ParamBase<T>::init() {
-	std::string hierarchicalName = getRelativeUniqueName(name);
-	HV_LOG_TRACE("Initialiazing {}", hierarchicalName);
-	this->name = hierarchicalName;
-	_registerParam(this);
+ParamBase<T>::ParamBase(const ParamBase &paramBase):
+		name(paramBase.name),
+		value(paramBase.value),
+		defaultValue(paramBase.defaultValue),
+		description(paramBase.description),
+		cbIDCpt(paramBase.cbIDCpt) {
 }
 
 template<typename T>
-const std::string& ParamBase<T>::getName() const {
-	return name;
+void ParamBase<T>::initName() {
+	HV_LOG_TRACE("Initialiazing {}", name);
+
+	// Hiventive parameter do not support parameter destruction / resurrection.
+	// We only support relative unique name if not used by CCI
+	std::string uniqueName = generateRelativeUniqueName(name);
+
+	// We set uniqueName (maybe be updated later by CCI initialization)
+	name = uniqueName;
+}
+
+template<typename T>
+void ParamBase<T>::setName(const std::string& name) {
+	this->name = name;
 }
 
 template<typename T>
 void ParamBase<T>::setValue(const T& value) {
+	T oldValue = this->value;
 	if(runPreWriteCallbacks(value)) {
 		this->value = value;
 	}
-	//runPostWriteCallbacks();
+	runPostWriteCallbacks(oldValue, value);
 }
 
 template<typename T>
 const T& ParamBase<T>::getValue() const {
-	return value;
+	runPreReadCallbacks(value);
+	const T* tmpValue = &value;
+	runPostReadCallbacks(value);
+	return *tmpValue;
 }
 
 template<typename T>
@@ -208,28 +219,78 @@ bool ParamBase<T>::unregisterAllCallbacks() {
 }
 
 template<typename T>
-bool ParamBase<T>::runPreWriteCallbacks(T value)
+void ParamBase<T>::runPreReadCallbacks(const T& value) const
 {
-	HV_LOG_TRACE("runPreWriteCallbacks with new value");
-	if (preWriteCallbacks.isUsing())
-		return false;
+	HV_LOG_TRACE("runPreReadCallbacks");
 
-	preWriteCallbacks.setUsing(true);
+	if (!preReadCallbacks.isUsing()) {
+		preReadCallbacks.setUsing(true);
 
-	bool result = true;
-	for(auto const &preWriteCallback : preWriteCallbacks.getMap()) {
-		HV_LOG_CRITICAL("runPreWriteCallback {}");
-		const ParamWriteEvent<T> ev(this->value, value, *this);
-		if (!(preWriteCallback.second)(ev)) {
-			HV_LOG_WARNING("The new value has been rejected by callback");
-			result = false;
+		for(auto const &preReadCallback : preReadCallbacks.getMap()) {
+			const ParamReadEvent<T> ev(this->value, *this);
+			(preReadCallback.second)(ev);
 		}
-	}
 
-	preWriteCallbacks.setUsing(false);
-	return result;
+		preReadCallbacks.setUsing(false);
+	}
 }
 
+template<typename T>
+void ParamBase<T>::runPostReadCallbacks(const T& value) const
+{
+	HV_LOG_TRACE("runPostReadCallbacks");
+
+	if (!postReadCallbacks.isUsing()) {
+		postReadCallbacks.setUsing(true);
+
+		for(auto const &postReadCallback : postReadCallbacks.getMap()) {
+			const ParamReadEvent<T> ev(this->value, *this);
+			(postReadCallback.second)(ev);
+		}
+
+		postReadCallbacks.setUsing(false);
+	}
+}
+
+template<typename T>
+bool ParamBase<T>::runPreWriteCallbacks(const T& value) const
+{
+	HV_LOG_TRACE("runPreWriteCallbacks");
+
+	if (!preWriteCallbacks.isUsing()) {
+		preWriteCallbacks.setUsing(true);
+
+		bool result = true;
+		for(auto const &preWriteCallback : preWriteCallbacks.getMap()) {
+			const ParamWriteEvent<T> ev(this->value, value, *this);
+			if (!(preWriteCallback.second)(ev)) {
+				HV_LOG_WARNING("The new value has been rejected by a callback.");
+				result = false;
+			}
+		}
+
+		preWriteCallbacks.setUsing(false);
+		return result;
+	}
+	return false;
+}
+
+template<typename T>
+void ParamBase<T>::runPostWriteCallbacks(const T& oldValue, const T& newValue) const
+{
+	HV_LOG_TRACE("runPostWriteCallbacks");
+
+	if (!postWriteCallbacks.isUsing()) {
+		postWriteCallbacks.setUsing(true);
+
+		for(auto const &postWriteCallback : postWriteCallbacks.getMap()) {
+			const ParamWriteEvent<T> ev(oldValue, newValue, *this);
+			(postWriteCallback.second)(ev);
+		}
+
+		postWriteCallbacks.setUsing(false);
+	}
+}
 
 template<typename T>
 ::hv::common::hvcbID_t ParamBase<T>::genCallbackID() {
