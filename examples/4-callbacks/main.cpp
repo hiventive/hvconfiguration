@@ -94,9 +94,9 @@ class SimulationModule : public sc_core::sc_module {
 public:
 	SimulationModule(sc_core::sc_module_name name) :
 			sc_core::sc_module(name),
-			stringParam("stringParam", "test"),
 			hvBroker(hv::cfg::getBroker()),
-			cciBroker(cci::cci_get_broker()) {
+			cciBroker(cci::cci_get_broker()),
+			stringParam("stringParam", "test") {
 		SC_THREAD(example);
 	}
 private:
@@ -159,11 +159,10 @@ private:
 	}
 
 private:
-	hv::cfg::Param<std::string> stringParam;
-
 	hv::cfg::Broker* hvBroker;
 	cci::cci_broker_handle cciBroker;
 
+	hv::cfg::Param<std::string> stringParam;
 };
 
 int sc_main(int argc, char* argv[])

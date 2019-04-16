@@ -244,7 +244,7 @@ protected:
 	 *
 	 * @param name Parameter name
 	 */
-	virtual void setName(const std::string&) override;
+	// virtual void setName(const std::string&) override;
 
 protected:
 	void init();

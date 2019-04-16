@@ -54,7 +54,7 @@ public:
 
 protected:
 	/// Parameter initialization
-	void init();
+	// void init();
 
 private:
 	/// Associated CCI parameter

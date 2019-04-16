@@ -33,8 +33,8 @@ public:
 		return static_cast< ParamBase<T>* >(this);
 	}
 
-private:
-	virtual void setName(const std::string& name) = 0;
+/*private:
+	virtual void setName(const std::string& name) = 0;*/
 };
 
 HV_CONFIGURATION_CLOSE_NAMESPACE

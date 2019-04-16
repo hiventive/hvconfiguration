@@ -37,22 +37,29 @@ ParamBase<T>::ParamBase(const ParamBase &paramBase):
 
 template<typename T>
 void ParamBase<T>::init() {
-	HV_LOG_TRACE("Initialiazing {}", name);
-
 	// Hiventive parameter do not support parameter destruction / resurrection.
 	// We only support relative unique name if not used by CCI
 	std::string hierarchicalUniqueName = generateRelativeUniqueName(name);
+
+	HV_LOG_TRACE("Initialiazing {}", hierarchicalUniqueName);
 
 	registerName(hierarchicalUniqueName);
 
 	// We set hierarchicalUniqueName
 	name = hierarchicalUniqueName;
+
+	_registerParam(this);
 }
 
 template<typename T>
+const std::string& ParamBase<T>::getName() const {
+	return this->name;
+}
+
+/*template<typename T>
 void ParamBase<T>::setName(const std::string& name) {
 	this->name = name;
-}
+}*/
 
 template<typename T>
 void ParamBase<T>::setValue(const T& value) {
