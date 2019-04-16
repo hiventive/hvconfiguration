@@ -24,7 +24,7 @@ public:
 			StorageIf* storage,
 			bool registerCCI = true);
 
-	~Broker() override HV_CPLUSPLUS_MEMBER_FUNCTION_DEFAULT;
+	~Broker() override;
 
 	explicit operator ::cci::cci_broker_if* ();
 

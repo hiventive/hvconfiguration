@@ -20,10 +20,9 @@
 HV_CONFIGURATION_OPEN_NAMESPACE
 
 template<typename T>
-class ParamBase : public ParamIf {
+class ParamBase : public ParamIf, public ParamCallbackIf<T> {
 	template<typename U, ::cci::cci_param_mutable_type TM> friend class ParamCCI;
 public:
-
 	/**
 	 * Get parameter name
 	 *
@@ -111,7 +110,105 @@ public:
 	 *
 	 * @return True if the parameter has registered callbacks otherwise false
      */
-	virtual bool hasCallbacks() const;
+	virtual bool hasCallbacks() const override;
+
+	/**
+	 * Param a pre read callback
+	 *
+	 * @param cb Pre read callback
+	 *
+	 * @return Callback ID
+	 */
+	virtual ::hv::common::hvcbID_t registerPreReadCallback(const PreReadCallback<T> &cb) override;
+
+	template<typename U>
+	::hv::common::hvcbID_t registerPreReadCallback(bool (U::*cb)(const ParamReadEvent<T>&), U *obj);
+
+	/**
+	 * Param a post read callback
+	 *
+	 * @param cb Post read callback
+	 *
+	 * @return Callback ID
+	 */
+	virtual ::hv::common::hvcbID_t registerPostReadCallback(const PostReadCallback<T> &cb) override;
+
+	template<typename U>
+	::hv::common::hvcbID_t registerPostReadCallback(void (U::*cb)(const ParamReadEvent<T>&), U *obj);
+
+	/**
+	 * Param a pre write callback
+	 *
+	 * @param cb Pre write callback
+	 *
+	 * @return Callback ID
+	 */
+	virtual ::hv::common::hvcbID_t registerPreWriteCallback(const PreWriteCallback<T> &cb) override;
+
+	template<typename U>
+	::hv::common::hvcbID_t registerPreWriteCallback(bool (U::*cb)(const ParamWriteEvent<T>&), U *obj);
+
+	/**
+	 * Param a post write callback
+	 *
+	 * @param cb Post write callback
+	 *
+	 * @return Callback ID
+	 */
+	virtual ::hv::common::hvcbID_t registerPostWriteCallback(const PostWriteCallback<T> &cb) override;
+
+	template<typename U>
+	::hv::common::hvcbID_t registerPostWriteCallback(void (U::*cb)(const ParamWriteEvent<T>&), U *obj);
+
+	/**
+	 * Unregister a pre read callback
+	 *
+	 * @param id Callback ID to unregister
+	 *
+	 * @return True if unregister is a success. Otherwise False.
+	 */
+	virtual bool unregisterPreReadCallback(const ::hv::common::hvcbID_t &id) override;
+
+	/**
+	 * Unregister a post read callback
+	 *
+	 * @param id Callback ID to unregister
+	 *
+	 * @return True if unregister is a success. Otherwise False.
+	 */
+	virtual bool unregisterPostReadCallback(const ::hv::common::hvcbID_t &id) override;
+
+	/**
+	 * Unregister a pre write callback
+	 *
+	 * @param id Callback ID to unregister
+	 *
+	 * @return True if unregister is a success. Otherwise False.
+	 */
+	virtual bool unregisterPreWriteCallback(const ::hv::common::hvcbID_t &id) override;
+
+	/**
+	 * Unregister a post write callback
+	 *
+	 * @param id Callback ID to unregister
+	 *
+	 * @return True if unregister is a success. Otherwise False.
+	 */
+	virtual bool unregisterPostWriteCallback(const ::hv::common::hvcbID_t &id) override;
+
+	/**
+	 * Unregister all callbacks
+	 *
+	 * @return True if success otherwise false
+     */
+	virtual bool unregisterAllCallbacks() override;
+
+	/**
+	 * Generate a unique callback ID
+	 * @return Unique ID
+	 */
+	::hv::common::hvcbID_t genCallbackID();
+
 
 	/**
 	 * Destructor
@@ -137,6 +234,29 @@ protected:
 			const T& defaultValue,
 			const std::string& description);
 
+	/**
+	 * Copy constructor
+	 */
+	ParamBase(const ParamBase &paramBase);
+
+	/**
+	 * Set parameter name
+	 *
+	 * @param name Parameter name
+	 */
+	// virtual void setName(const std::string&) override;
+
+protected:
+	void init();
+
+	void runPreReadCallbacks(const T& value) const;
+
+	void runPostReadCallbacks(const T& value) const;
+
+	bool runPreWriteCallbacks(const T& value) const;
+
+	void runPostWriteCallbacks(const T& oldValue, const T& newValue) const;
+
 protected:
 	/// Parameter name
 	std::string name;
@@ -151,44 +271,71 @@ protected:
 	std::string description;
 
 private:
-	/// Callback item to store a callback
-	template<typename U>
-	class CallbackItem {
-	public:
-		CallbackItem(U callback) :
-			callback(callback) {
-		};
-	private:
-		T callback;
-	};
-
 	/// Callback vector item
 	template<typename U>
-	class CallbackVector {
+	class CallbackMap {
 	public:
-		CallbackVector() :
+		CallbackMap() :
 			inUse(false) {
 		};
+
+		void setCb(::hv::common::hvcbID_t id, U cb) {
+			if(!hasID(id)) {
+				map.insert(std::pair<::hv::common::hvcbID_t, U>(id, cb));
+				//map[id] = cb;
+			} else {
+				HV_LOG_ERROR("A callback with this ID is already registered.");
+			}
+		}
+
+		bool hasID(::hv::common::hvcbID_t id) const {
+			return map.find(id) != map.end() ;
+		}
+
+		void erase(::hv::common::hvcbID_t id) {
+			if(hasID(id)) {
+				map.erase(id);
+			}
+		}
+
+		bool isEmpty() const {
+			return map.empty();
+		}
+
+		void clear() {
+			map.clear();
+		}
+
+		std::map<::hv::common::hvcbID_t, U> getMap() const {
+			return map;
+		}
+
+		void setUsing(bool inUse) const {
+			this->inUse = inUse;
+		}
+
+		bool isUsing() const {
+			return this->inUse;
+		}
 	private:
-		std::vector<U> callbackVector;
+		std::map<::hv::common::hvcbID_t, U> map;
 		mutable bool inUse;
 	};
 
 	/// Pre read callbacks
-	//CallbackVector<CallbackItem<::cci::cci_callback_untyped_handle::type> > preReadCallbacks;
-	// TODO
+	CallbackMap<PreReadCallback<T> > preReadCallbacks;
 
 	/// Post read callbacks
-	//CallbackVector<CallbackItem<::cci::cci_callback_untyped_handle::type> > postReadCallbacks;
-	// TODO
+	CallbackMap<PostReadCallback<T> > postReadCallbacks;
 
 	/// Pre write callbacks
-	//CallbackVector<CallbackItem<::cci::cci_callback_untyped_handle::type> > preWriteCallbacks;
-	// TODO
+	CallbackMap<PreWriteCallback<T> > preWriteCallbacks;
 
 	/// Post write callbacks
-	//CallbackVector<CallbackItem<::cci::cci_callback_untyped_handle::type> > postWriteCallbacks;
-	// TODO
+	CallbackMap<PostWriteCallback<T> > postWriteCallbacks;
+
+	/// Callback ID counter
+	::hv::common::hvcbID_t cbIDCpt;
 };
 
 HV_CONFIGURATION_CLOSE_NAMESPACE

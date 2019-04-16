@@ -12,11 +12,17 @@
 
 #include "../configuration/common.h"
 #include "base/param-base.h"
+#include "param-callback-if.h"
 
 HV_CONFIGURATION_OPEN_NAMESPACE
 
 template <typename T>
 class ParamBase;
+
+enum NameType {
+	RELATIVE_NAME,
+	ABSOLUTE_NAME
+};
 
 class ParamIf {
 public:
@@ -26,6 +32,9 @@ public:
 	ParamBase<T>* getParamTyped() const {
 		return static_cast< ParamBase<T>* >(this);
 	}
+
+/*private:
+	virtual void setName(const std::string& name) = 0;*/
 };
 
 HV_CONFIGURATION_CLOSE_NAMESPACE

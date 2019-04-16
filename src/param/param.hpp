@@ -27,10 +27,10 @@ Param<T, TM>::Param(const std::string& name,
 	  const T& defaultValue,
 	  const std::string& description,
 	  ::cci::cci_name_type nameType,
-	  const ::cci::cci_originator& originator) :
+	  const ::cci::cci_originator& originator):
 		ParamBase<T>(name, defaultValue, description),
 		paramCCI(*this, nameType, originator) {
-
+	// init();
 }
 
 template<typename T, ::cci::cci_param_mutable_type TM>
@@ -42,6 +42,7 @@ Param<T, TM>::Param(const std::string& name,
 		ParamBase<T>(name, defaultValue),
 		paramCCI(*this, nameType, originator) {
 	// FIXME: handle cci_value
+	// init();
 }
 
 template<typename T, ::cci::cci_param_mutable_type TM>
@@ -53,7 +54,7 @@ Param<T, TM>::Param(const std::string& name,
 	  const ::cci::cci_originator& originator) :
 		ParamBase<T>(name, defaultValue),
 		paramCCI(*this, privateBroker, nameType, originator) {
-
+	// init();
 }
 
 template<typename T, ::cci::cci_param_mutable_type TM>
@@ -66,8 +67,13 @@ Param<T, TM>::Param(const std::string& name,
 		ParamBase<T>(name, defaultValue),
 		paramCCI(*this, privateBroker, nameType, originator) {
 	// FIXME: handle cci_value
+	// init();
 }
 
+/*template<typename T, ::cci::cci_param_mutable_type TM>
+void Param<T, TM>::init() {
+	// Foo
+}*/
 
 template<typename T, ::cci::cci_param_mutable_type TM>
 Param<T, TM>::~Param() {

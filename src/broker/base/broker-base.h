@@ -56,8 +56,7 @@ public:
 	 *
 	 * @return Parameter preset value
 	 */
-	template <typename T>
-	const T& getPresetValue(const std::string &paramName);
+	std::string getPresetValue(const std::string &paramName);
 
 	/**
 	 * Set parameter preset value by name used for parameter initialization
@@ -65,18 +64,15 @@ public:
 	 * @param paramName Parameter name
 	 * @param value Parameter preset value
 	 */
-	template <typename T>
 	void setPresetValue(const std::string& paramName,
-			const T& presetValue);
-
+			 			const std::string& presetValue);
 
 	/**
 	 * Get unconsumed preset values (for which no parameter is ever created)
 	 *
 	 * @return Vector of pair of name / value of parameters
 	 */
-	template <typename T>
-	std::vector<std::pair<std::string, T> > getUnconsumedPresetValues() const;
+	std::vector<std::pair<std::string, std::string> > getUnconsumedPresetValues() const;
 
 	// TODO
 	/* virtual PresetValueRange getUnconsumedPresetValues(
@@ -136,6 +132,15 @@ public:
 
 	// TODO
 	// virtual ParamRange getParams(ParamPredicate& pred) const;
+
+	/**
+	 * Get parameter by name
+	 *
+	 * @param paramName Parameter name
+	 *
+	 * @return A pointer to the parameter
+	 */
+	virtual ParamIf* getParam(const std::string& paramName);
 
 	/**
 	 * Destructor

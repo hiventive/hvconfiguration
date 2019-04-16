@@ -44,6 +44,7 @@ public:
 			::cci::cci_name_type nameType = ::cci::CCI_RELATIVE_NAME,
 			const ::cci::cci_originator& originator = ::cci::cci_originator());
 
+public:
 	using ParamBase<T>::operator=;
 
 	// FIXME
@@ -51,7 +52,12 @@ public:
 
 	~Param();
 
+protected:
+	/// Parameter initialization
+	// void init();
+
 private:
+	/// Associated CCI parameter
 	ParamCCI<T, TM> paramCCI;
 };
 

@@ -32,25 +32,6 @@ ParamCCI<T, TM>::ParamCCI(ParamBase<T>& paramBase,
 		paramBase(paramBase), originator(originator),
 		brokerHandle(privateBroker),
 		valueOriginator(originator) {
-	// Generate the right name
-	if(nameType == ::cci::CCI_RELATIVE_NAME) {
-		::sc_core::sc_object* currentObject = ::sc_core::sc_get_current_object();
-		for (sc_core::sc_process_handle currentProcess(currentObject);
-		     currentProcess.valid();
-		     currentProcess = ::sc_core::sc_process_handle(currentObject)) {
-			currentObject = currentProcess.get_parent_object();
-		}
-		if(currentObject) {
-			paramBase.name = std::string(currentObject->name()) + ::sc_core::SC_HIERARCHY_CHAR + paramBase.name;
-		}
-	}
-
-	// Handle name collision and destruction / resurrection
-	std::string uniqueName = std::string(::cci::cci_gen_unique_name(paramBase.name.c_str()));
-	if (uniqueName != paramBase.name && (::sc_core::sc_hierarchical_name_exists(paramBase.name.c_str())
-	                                     || brokerHandle.has_preset_value(paramBase.name))) {
-		paramBase.name = uniqueName;
-	}
 
 	// Set preset value (if available)
 	if (brokerHandle.has_preset_value(paramBase.getName())) {
@@ -59,8 +40,7 @@ ParamCCI<T, TM>::ParamCCI(ParamBase<T>& paramBase,
 		if (presetCciValue.try_get<T>(typedValue)) {
 			paramBase.value = typedValue;
 		} else {
-			// TODO: replace with HV_LOG(fatal, )
-			std::cerr << "Unable to load preset CCI value for parameter " << paramBase.getName() << std::endl;
+			HV_LOG_ERROR("Unable to load preset CCI value for parameter {}", paramBase.getName());
 		}
 	}
 	this->init(brokerHandle);

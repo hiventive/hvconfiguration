@@ -31,7 +31,7 @@ const T& BrokerBase::getValue(const std::string& paramName) const {
 		ParamBase<T>* paramTyped = param->getParamTyped<T>();
 		return paramTyped->getValue();
 	} else {
-		// TODO: write an error
+		HV_LOG_WARNING("Unable to find parameter with name {}", paramName);
 		return T();
 	}
 }
@@ -42,39 +42,36 @@ void BrokerBase::setValue(const std::string& paramName,
 	if(hasParam(paramName)) {
 		params[paramName]->getParamTyped<T>().setValue(value);
 	} else {
-		// TODO: write an error
+		HV_LOG_WARNING("Unable to find parameter with name {}", paramName);
 	}
 }
 
-template <typename T>
-const T& BrokerBase::getPresetValue(const std::string &paramName) {
-	if(presets->hasValue(paramName)) {
-		// FIXME
-		// return presets->getValue<T>(paramName);
+std::string BrokerBase::getPresetValue(const std::string &paramName) {
+	HV_LOG_ERROR("getPresetValue() is not implemented");
+	// TODO: Missing string conversion to type T
+	/*if(presets->hasValue(paramName)) {
+		return presets->getValue(paramName);
 	} else {
-		// TODO: write an error
-		return T();
-	}
+		HV_LOG_WARNING("Unable to find parameter with name {}", paramName);
+		return std::string();
+	}*/
+	return std::string();
 }
 
-template <typename T>
 void BrokerBase::setPresetValue(const std::string& paramName,
-		const T& presetValue) {
-	if(presets->hasValue(paramName)) {
-		// FIXME
-		// presets->setValue<T>(paramName, presetValue);
-	} else {
-		// TODO: write an error
-	}
+		const std::string& presetValue) {
+	HV_LOG_ERROR("setPresetValue() is not implemented");
+	// TODO: Missing  string conversion to type T
+	//presets->setValue(paramName, presetValue);
 }
 
-template <typename T>
-std::vector<std::pair<std::string, T> > BrokerBase::getUnconsumedPresetValues() const {
-
+std::vector<std::pair<std::string, std::string> > BrokerBase::getUnconsumedPresetValues() const {
+	return std::vector<std::pair<std::string,std::string> >(presets->getValues().begin(), presets->getValues().end());
 }
 
 void BrokerBase::lockPresetValue(const std::string& paramName) {
-
+	// TODO
+	HV_LOG_ERROR("setPresetValue() is not implemented");
 }
 
 bool BrokerBase::hasPresetValue(const std::string& paramName) const {
@@ -83,10 +80,10 @@ bool BrokerBase::hasPresetValue(const std::string& paramName) const {
 
 void BrokerBase::addParam(ParamIf* paramBase) {
 	if(paramBase) {
+		HV_LOG_TRACE("Broker adding param {}", paramBase->getName());
 		params[paramBase->getName()] = paramBase;
 	}
 }
-
 
 void BrokerBase::removeParam(ParamIf* paramBase) {
 	if(paramBase) {
@@ -97,13 +94,20 @@ void BrokerBase::removeParam(ParamIf* paramBase) {
 	}
 }
 
-
 std::vector<ParamIf*> BrokerBase::getParams() const {
 	std::vector<ParamIf*> result;
 	for(auto const &entry : params) {
 		result.push_back(entry.second);
 	}
 	return result;
+}
+
+ParamIf* BrokerBase::getParam(const std::string& paramName) {
+	if(hasParam(paramName)) {
+		return params.at(paramName);
+	} else {
+		return nullptr;
+	}
 }
 
 bool BrokerBase::hasParam(const std::string& paramName) const {

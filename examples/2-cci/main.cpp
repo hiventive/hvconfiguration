@@ -1,3 +1,6 @@
+#include <hv/common/log-level.h>
+#define HV_LOG_ACTIVE_LEVEL HV_LOG_LEVEL_TRACE
+
 #include <systemc>
 #include <hv/configuration.h>
 #include <cci_configuration>
@@ -13,7 +16,7 @@ public:
 private:
 	void example() {
 		myParam = 3;
-		std::cout << myParam << std::endl;
+		HV_LOG_DEBUG("{}", myParam);
 	}
 
 private:
@@ -22,6 +25,8 @@ private:
 
 int sc_main(int argc, char* argv[])
 {
+	hv::common::setLogLevel(hv::common::log::trace);
+
 	hv::cfg::Broker hiventiveBroker("Hiventive broker");
 
 	// Call to Broker API
